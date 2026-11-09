@@ -1,4 +1,4 @@
-const CACHE = 'codeway-v1';
+const CACHE = 'codeway-v2-responsive';
 const CORE = ['./','./index.html','./styles.css','./app.js','./lessons.js','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon.svg'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(()=>self.skipWaiting()));

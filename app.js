@@ -38,8 +38,8 @@ function icon(name) {
  chart:'<rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 17v-4m4 4V8m4 9v-6"/>'};
  return `<svg aria-hidden="true" viewBox="0 0 24 24">${d[name]}</svg>`;
 }
-function nav(active) {
- return `<nav class="bottom-nav" aria-label="주 메뉴">
+function nav(active, desktopOnly=false) {
+ return `<nav class="bottom-nav ${desktopOnly?'desktop-only':''}" aria-label="주 메뉴">
  <button class="nav-item ${active==='home'?'active':''}" data-action="nav" data-page="home">${icon('home')}<span>배우기</span></button>
  <button class="nav-item ${active==='playground'?'active':''}" data-action="nav" data-page="playground">${icon('terminal')}<span>연습장</span></button>
  <button class="nav-item ${active==='progress'?'active':''}" data-action="nav" data-page="progress">${icon('chart')}<span>내 기록</span></button></nav>`;
@@ -68,21 +68,21 @@ function home() {
   <div class="section-head"><h2>배우고 싶은 언어</h2><span class="helper">4개 과정 · 112단계</span></div>
   <div class="cards">${names.map(courseCard).join('')}</div>
   <div class="section-head"><h2>오늘 더 연습하고 싶다면?</h2></div>
-  <button class="callout" style="width:100%;text-align:left" data-action="random"><div class="callout-icon">⚡</div><div class="callout-copy"><strong>랜덤 코딩 챌린지</strong><p>준비된 문제를 마음껏 복습해요. 시도 횟수 제한 0.</p></div><span class="callout-arrow">›</span></button>
+  <div class="home-challenges"><button class="callout" style="width:100%;text-align:left" data-action="random"><div class="callout-icon">⚡</div><div class="callout-copy"><strong>랜덤 코딩 챌린지</strong><p>준비된 문제를 마음껏 복습해요. 시도 횟수 제한 0.</p></div><span class="callout-arrow">›</span></button>
   <button class="callout" style="width:100%;text-align:left" data-action="nav" data-page="playground"><div class="callout-icon" style="background:#e8eeff;color:#5e59df">&lt;/&gt;</div><div class="callout-copy"><strong>나만의 코드 실험실</strong><p>문제 없이 자유롭게 코드를 실행해 보세요.</p></div><span class="callout-arrow">›</span></button>
-  <p class="footer-note">광고 없음 · 일일 학습 제한 없음 · 계정 가입 없음<br>학습 기록은 이 기기에 저장돼요.</p></main></div>${nav('home')}`;
+  </div><p class="footer-note">광고 없음 · 일일 학습 제한 없음 · 계정 가입 없음<br>학습 기록은 이 기기에 저장돼요.</p></main></div>${nav('home')}`;
 }
 function course() {
  const k=ui.course,c=COURSES[k];
  return `<div class="screen"><header class="topbar"><button class="back" data-action="nav" data-page="home">‹ &nbsp;전체 과정</button><div class="metric">${courseDone(k)}/28 완료</div></header><main>
  <div class="course-head" ${courseVars(k)}><span class="course-logo">${E(c.emoji)}</span><div><strong>${E(c.name)}</strong><p>${E(c.subtitle)}</p></div></div>
  <p class="page-subtitle">원하는 강의부터 자유롭게 시작할 수 있어요. 잠겨 있는 단계는 없어요.</p>
- ${c.chapters.map((ch,i)=>{
+ <div class="chapter-grid">${c.chapters.map((ch,i)=>{
   const ls=courseLessons[k].filter(l=>l.chapter===i);
   const count=ls.filter(l=>state.done[l.id]).length;
   return `<section class="chapter"><div class="chapter-head"><span class="chapter-num">${String(i+1).padStart(2,'0')}</span><div><strong>${E(ch)}</strong><p>${count}/7 단계 완료</p></div></div>
    ${ls.map((l,j)=>`<button class="lesson-row" data-action="lesson" data-id="${l.id}"><span class="lesson-symbol ${state.done[l.id]?'done':l.type==='quiz'?'quiz':''}">${state.done[l.id]?'✓':l.type==='quiz'?'★':String(j+1).padStart(2,'0')}</span><strong>${E(l.title)}</strong><span class="chevron">›</span></button>`).join('')}</section>`;
- }).join('')}
+ }).join('')}</div>
  </main></div>${nav('home')}`;
 }
 function editor(id,value,lang,label='code',height=195) {
@@ -111,13 +111,13 @@ function lesson() {
   return `${lessonTop(l)}<div class="lesson-screen"><span class="pill">★ 단원 마무리</span><h1 class="lesson-heading">${E(l.title)}</h1>
    <div class="lesson-explain">여기까지 배운 내용을 확인해 봐요. 틀려도 다시 고를 수 있어요.</div>
    <p class="quiz-question">${E(l.question)}</p><div class="quiz-options">${l.options.map((o,i)=>`<button class="quiz-option ${selected===i?(correct?'correct':'incorrect'):''}" data-action="quiz-select" data-choice="${i}"><span class="opt-letter">${'ABCD'[i]}</span>${E(o)}</button>`).join('')}</div>
-   ${selected!==null?feedback(correct?{type:'pass',message:l.explain}:{type:'fail',message:'다른 선택지를 골라보세요. 힌트: 앞에서 배운 개념을 생각해 보세요.'}):done?'<p class="mini-text">이미 완료한 퀴즈예요. 언제든 다시 풀 수 있어요.</p>':''}</div>`;
+   ${selected!==null?feedback(correct?{type:'pass',message:l.explain}:{type:'fail',message:'다른 선택지를 골라보세요. 힌트: 앞에서 배운 개념을 생각해 보세요.'}):done?'<p class="mini-text">이미 완료한 퀴즈예요. 언제든 다시 풀 수 있어요.</p>':''}</div>${nav('home',true)}`;
  }
- return `${lessonTop(l)}<div class="lesson-screen"><span class="pill">${E(COURSES[l.course].name)} · 직접 코딩하기</span><h1 class="lesson-heading">${E(l.title)}</h1>
+ return `${lessonTop(l)}<div class="lesson-screen"><div class="lesson-grid"><section class="lesson-guide"><span class="pill">${E(COURSES[l.course].name)} · 직접 코딩하기</span><h1 class="lesson-heading">${E(l.title)}</h1>
  <div class="lesson-explain">${E(l.explain)}</div>
  <div class="lesson-subhead">이렇게 쓰는 거예요 <span class="mini-text">예시 코드</span></div><pre class="sample">${E(l.example)}</pre>
- <div class="task-box"><div class="task-label">YOUR MISSION</div><p>${E(l.task)}</p></div>
- <div class="lesson-subhead">내 코드 <span class="mini-text">직접 수정할 수 있어요</span></div>${editor('lesson-editor',code,l.course,`lesson_${l.id}.code`,190)}
+ <div class="task-box"><div class="task-label">YOUR MISSION</div><p>${E(l.task)}</p></div></section>
+ <section class="lesson-workspace"><div class="lesson-subhead">내 코드 <span class="mini-text">직접 수정할 수 있어요</span></div>${editor('lesson-editor',code,l.course,`lesson_${l.id}.code`,190)}
  <div class="editor-tools"><button class="outline" data-action="toggle-hint">${ui.hint?'힌트 숨기기':'💡 힌트'}</button><button class="outline" data-action="toggle-answer">${ui.answer?'정답 숨기기':'정답 보기'}</button><button class="outline" data-action="reset-lesson">초기화</button></div>
  ${ui.hint?`<div class="hint">💡 ${E(l.hint)}</div>`:''}${ui.answer?`<div class="answer">${E(l.solution)}</div><button class="secondary" style="margin-top:8px" data-action="fill-answer">정답을 편집기에 넣기</button>`:''}
  ${l.course==='python'?'<div class="mini-text" style="margin-top:12px">Python 실행에는 첫 실행 시 인터넷 연결이 필요해요.</div>':''}
@@ -125,18 +125,18 @@ function lesson() {
  ${feedback(ui.runResult)}
  <div id="preview-slot"></div>
  ${done&&!ui.runResult?'<div class="info-note">✓ 이 단계는 이미 완료했어요. 코드를 수정해 다시 연습해도 돼요.</div>':''}
- </div>`;
+ </section></div></div>${nav('home',true)}`;
 }
 function playground() {
  const lang=ui.language, code=state.playDrafts[lang]??DEFAULT_PLAY[lang];
  return `<div class="screen">${topbar()}<main><h1 class="page-title">코드 실험실</h1><p class="page-subtitle">틀려도 괜찮아요. 직접 만들어 보고 무제한으로 실행해요.</p>
  <div class="playground-intro"><h2>자유롭게 코딩해 봐요 ✨</h2><p>정해진 정답 없이 코드를 실행할 수 있어요. HTML/CSS는 화면 미리보기, JavaScript/Python은 출력 결과를 확인해요.</p></div>
- <div class="lang-tabs">${names.map(k=>`<button class="lang-tab ${k===lang?'active':''}" data-action="play-lang" data-lang="${k}">${E(COURSES[k].name)}</button>`).join('')}</div>
+ <div class="playground-workspace"><section class="playground-code"><div class="lang-tabs">${names.map(k=>`<button class="lang-tab ${k===lang?'active':''}" data-action="play-lang" data-lang="${k}">${E(COURSES[k].name)}</button>`).join('')}</div>
  ${editor('play-editor',code,lang,'my_practice.code',290)}
  <div class="editor-tools"><button class="outline" data-action="reset-play">예시로 초기화</button><button class="outline" data-action="copy-play">코드 복사</button></div>
  ${lang==='python'?'<p class="mini-text">Python 실행은 인터넷에서 무료 오픈소스 Pyodide 엔진을 불러와요. 첫 실행 시 데이터가 사용돼요.</p>':''}
  <div class="run-bar"><button id="run-button" class="primary large" data-action="run-play" ${ui.busy?'disabled':''}>${ui.busy?'<span class="loading-spinner"></span> 실행 중...':'▶ &nbsp; 실행하기'}</button></div>
- ${feedback(ui.runResult)}<div id="preview-slot"></div>
+ </section><section class="playground-results"><div class="result-title">실행 결과 <span class="mini-text">코드를 실행하면 여기에 표시돼요</span></div>${feedback(ui.runResult)}<div id="preview-slot"></div>${!ui.runResult?'<div class="result-empty"><span>⌘</span><strong>결과를 확인할 준비가 됐어요</strong><p>왼쪽 편집기에 코드를 입력하고 실행 버튼을 눌러 보세요.</p></div>':''}</section></div>
  <p class="footer-note">작성한 코드는 이 브라우저에만 저장돼요. 서버로 업로드하지 않아요.</p>
  </main></div>${nav('playground')}`;
 }
