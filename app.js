@@ -35,13 +35,15 @@ function icon(name) {
  const d={
  home:'<path d="M3 10 12 3l9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V10Z"/><path d="M9 21v-8h6v8"/>',
  terminal:'<rect x="3" y="4" width="18" height="16" rx="3"/><path d="m7 9 3 3-3 3m6 0h4"/>',
- chart:'<rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 17v-4m4 4V8m4 9v-6"/>'};
+ chart:'<rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 17v-4m4 4V8m4 9v-6"/>',
+ layers:'<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7 8h10M7 12h10M7 16h6"/>'};
  return `<svg aria-hidden="true" viewBox="0 0 24 24">${d[name]}</svg>`;
 }
 function nav(active, desktopOnly=false) {
  return `<nav class="bottom-nav ${desktopOnly?'desktop-only':''}" aria-label="주 메뉴">
  <button class="nav-item ${active==='home'?'active':''}" data-action="nav" data-page="home">${icon('home')}<span>배우기</span></button>
  <button class="nav-item ${active==='playground'?'active':''}" data-action="nav" data-page="playground">${icon('terminal')}<span>연습장</span></button>
+ <a class="nav-item" href="./studio.html">${icon('layers')}<span>프로젝트</span></a>
  <button class="nav-item ${active==='progress'?'active':''}" data-action="nav" data-page="progress">${icon('chart')}<span>내 기록</span></button></nav>`;
 }
 function topbar() {
@@ -65,6 +67,7 @@ function home() {
  return `<div class="screen">${topbar()}<main>
   <div class="hero"><div class="eyebrow">LEARN WITHOUT LIMITS</div><h1>코딩 실력,<br>매일 무제한 성장.</h1><p>하트도 기다림도 없이! 내가 원하는 만큼 직접 코드를 쓰면서 배워요.</p>
   <button class="primary" data-action="lesson" data-id="${resume.id}">▶ &nbsp; ${totalDone()?'이어서 배우기':'첫 강의 시작하기'}</button></div>
+  <a class="lab-teaser" href="./studio.html"><span class="lab-teaser-icon">✳</span><span><small>NEW · PROJECT LAB</small><strong>튜토리얼은 이제 그만. 직접 만들자.</strong><em>포트폴리오 프로젝트 6개 + 중급·고급 챌린지 14개</em></span><b>↗</b></a>
   <div class="section-head"><h2>배우고 싶은 언어</h2><span class="helper">4개 과정 · 112단계</span></div>
   <div class="cards">${names.map(courseCard).join('')}</div>
   <div class="section-head"><h2>오늘 더 연습하고 싶다면?</h2></div>
@@ -314,6 +317,6 @@ app.addEventListener('click',async e=>{
 });
 render();
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){
- window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+ window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=4.0.0', {updateViaCache:'none'}).catch(()=>{}));
 }
 })();

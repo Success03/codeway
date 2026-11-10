@@ -118,3 +118,16 @@
   .result-empty { min-height: 150px; }
   .result-title { margin-top: 8px; }
 }
+
+/* v4 Project Lab entry — works on both desktop and mobile */
+.bottom-nav{grid-template-columns:repeat(4,minmax(0,1fr))}
+.nav-item{text-decoration:none;justify-content:center}
+@media(min-width:780px){.nav-item{justify-content:flex-start}}
+.lab-teaser{display:flex;align-items:center;gap:14px;background:linear-gradient(115deg,#26274e,#5349aa);color:#fff!important;border-radius:22px;padding:19px 21px;margin:17px 0 2px;text-decoration:none;box-shadow:0 9px 24px #32317a1a}
+.lab-teaser-icon{width:48px;height:48px;display:grid;place-items:center;flex:none;background:#ffffff26;color:#fff;border-radius:14px;font-size:24px}
+.lab-teaser>span:nth-child(2){display:grid;gap:5px;flex:1;min-width:0}
+.lab-teaser small{letter-spacing:1.5px;font-size:9px;color:#c0b9ff;font-weight:900}
+.lab-teaser strong{font-size:15px;font-weight:900;line-height:1.5}
+.lab-teaser em{font-size:11px;color:#c3c1dc;font-style:normal;line-height:1.6}
+.lab-teaser>b{font-size:24px;color:#c7c0ff}
+@media(max-width:779px){.lab-teaser{padding:15px;gap:11px;border-radius:18px}.lab-teaser-icon{height:43px;width:43px}.lab-teaser strong{font-size:13px}.lab-teaser em{font-size:10px}.bottom-nav .nav-item{min-width:0}}
